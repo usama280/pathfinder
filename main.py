@@ -4,7 +4,7 @@ from queue import deque
 from queue import PriorityQueue
 
 
-WIDTH = 800 
+WIDTH = 650 
 WIN = pygame.display.set_mode((WIDTH, WIDTH)) #window
 pygame.display.set_caption("Path Finder (A*)")
 
@@ -93,12 +93,6 @@ def alg_BFS(draw, grid, start, end):
         node = q.pop()
         neighbors = node.neighbors
 
-        if node == end:
-            create_BFS_path(start, end, prev, draw)
-            start.color = ORANGE
-            end.color = PURPLE
-            return True
-
         for neighbor in neighbors:
             if not visited[neighbor]:
                 q.appendleft(neighbor)
@@ -107,6 +101,14 @@ def alg_BFS(draw, grid, start, end):
                 neighbor.color = GREEN
 
         draw()
+
+    create_BFS_path(start, end, prev, draw)
+    start.color = ORANGE
+    end.color = PURPLE
+
+    #create_BFS_path(start, end, prev, draw)
+    #start.color = ORANGE
+    #end.color = PURPLE
 
 
 #heuristic function - distance between current and end node
@@ -183,6 +185,9 @@ def make_grid(rows, width):
         grid.append([])
         for j in range(rows):
             node = Node(i,j,cube_width, rows) #creates nodes
+            if i == 0 or i == rows-1 or j ==0 or j==rows-1:
+                node.color = BLACK
+
             grid[i].append(node)
 
     return grid
@@ -252,6 +257,7 @@ def main(win, width):
 
             if pygame.mouse.get_pressed()[0]: #left click
                 pos = pygame.mouse.get_pos()
+                print(pos)
                 row, col = get_mouse_pos(pos, ROWS, width)
                 node = GRID[row][col]
                 
@@ -285,8 +291,8 @@ def main(win, width):
                         for node in row:
                             node.update_neighbors(GRID) 
                     #calling A* alg
-                    #alg_aStar(lambda: draw(win, GRID, ROWS, width), GRID, start, end)#sending draw func as an argument
-                    alg_BFS(lambda: draw(win, GRID, ROWS, width), GRID, start, end)
+                    alg_aStar(lambda: draw(win, GRID, ROWS, width), GRID, start, end)#sending draw func as an argument
+                    #alg_BFS(lambda: draw(win, GRID, ROWS, width), GRID, start, end)
 
                 if event.key == pygame.K_r:
                     start = None
