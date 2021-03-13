@@ -1,6 +1,8 @@
 import pygame
 import math
+from queue import deque
 from queue import PriorityQueue
+
 
 WIDTH = 800 
 WIN = pygame.display.set_mode((WIDTH, WIDTH)) #window
@@ -64,6 +66,49 @@ class Node:
         return False
 
 
+def create_BFS_path(start, end, prev, draw):
+    path = []
+    current = end
+    
+    while current != None:
+        current.color = YELLOW
+        path.append(current)
+        current = prev[current]
+        draw()
+
+    path.reverse()
+    if path[0] != start:
+        return False
+        
+
+def alg_BFS(draw, grid, start, end):
+    q = deque()
+    q.append(start)
+
+    visited = {node: False for row in grid for node in row}
+    visited[start] = True
+    prev = {node: None for row in grid for node in row}
+
+    while len(q) != 0:
+        node = q.pop()
+        neighbors = node.neighbors
+
+        if node == end:
+            create_BFS_path(start, end, prev, draw)
+            start.color = ORANGE
+            end.color = PURPLE
+            return True
+
+        for neighbor in neighbors:
+            if not visited[neighbor]:
+                q.appendleft(neighbor)
+                visited[neighbor] = True
+                prev[neighbor] = node
+                neighbor.color = GREEN
+
+        draw()
+
+
 #heuristic function - distance between current and end node
 def h(p1, p2):
     x1, y1 = p1
@@ -72,7 +117,7 @@ def h(p1, p2):
     return abs(x1-x2) + abs(y1-y2)
 
 
-def create_path(came_from, current, draw):
+def create_aStar_path(came_from, current, draw):
     while current in came_from:
         current = came_from[current]
         current.color = YELLOW
@@ -100,7 +145,7 @@ def alg_aStar(draw, grid, start, end):
         open_set_hash.remove(current) #avoid dupes
 
         if current == end:
-            create_path(came_from, end, draw)
+            create_aStar_path(came_from, end, draw)
             start.color = ORANGE
             end.color = PURPLE
             return True
@@ -240,8 +285,8 @@ def main(win, width):
                         for node in row:
                             node.update_neighbors(GRID) 
                     #calling A* alg
-                    alg_aStar(lambda: draw(win, GRID, ROWS, width), GRID, start, end)#sending draw func as an argument
-                    alg_bfs(lambda: draw(win, GRID, ROWS, width), GRID, start, end)
+                    #alg_aStar(lambda: draw(win, GRID, ROWS, width), GRID, start, end)#sending draw func as an argument
+                    alg_BFS(lambda: draw(win, GRID, ROWS, width), GRID, start, end)
 
                 if event.key == pygame.K_r:
                     start = None
