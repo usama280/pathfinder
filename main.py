@@ -7,7 +7,6 @@ from queue import PriorityQueue
 WIDTH = 650 
 WIN = pygame.display.set_mode((WIDTH, WIDTH)) #window
 pygame.display.set_caption("Path Finder")
-USER_EVENT = pygame.USEREVENT + 1
 
 
 #Colors and Keys
@@ -231,17 +230,17 @@ def get_mouse_pos(pos, rows, width):
     return row,col
 
 
-def main(win, width):
+def main(win, width, alg):
     ROWS = 50
     GRID = make_grid(ROWS, width)
 
     start, end = None, None
-    alg = ''
 
     clock = pygame.time.Clock()
     run = True
 
-    pygame.event.post(pygame.event.Event(USER_EVENT))
+    alg = alg
+
     while run:
         clock.tick(60)
         draw(win, GRID, ROWS, width)
@@ -250,22 +249,20 @@ def main(win, width):
             if event.type == pygame.QUIT:
                 run = False
 
-            if event.type == USER_EVENT:
-                alg = input('What alg would you like to run?(a*, bfs)')
-                
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
                     ROWS -= 1
                     start = None
                     end = None
-                    
                     GRID = make_grid(ROWS, width)
+                    
+
                 elif event.button == 5:
                     ROWS += 1
                     start = None
                     end = None
                     GRID = make_grid(ROWS, width)
-                    pygame.event.post(pygame.event.Event(USER_EVENT))
+                    
 
             if pygame.mouse.get_pressed()[0]: #left click
                 pos = pygame.mouse.get_pos()
@@ -312,7 +309,6 @@ def main(win, width):
                     start = None
                     end = None
                     GRID = make_grid(ROWS, width)
-                    pygame.event.post(pygame.event.Event(USER_EVENT))
 
     pygame.quit()
 
@@ -320,9 +316,10 @@ def main(win, width):
 #Basic instructions
 print('How to use:\n\t Left-mouse click will place the start node first, followed by the end, and finally the barriers')
 print('\t Right-mouse click will remove start/end/barriers - Note: A start and end node must be present to start algorithm')
-print('\t Scrolling with the mouse increases/decreases the rows (Thereby, increasing the zoom)')
+print('\t Scrolling with the mouse increases/decreases the rows and create new grid (Thereby, increasing the zoom)')
 print('\t Hitting space will start the algorithm')
-print('\t Hitting r will create a new grid')
+print('\t Hitting r will create a new grid and allow you to change alg')
+print('\n To change algorithms, change variable ''alg'' to one of the following: a*, bfs')
 
-
-main(WIN, WIDTH)
+alg = 'a*' #change alg here (a*,bfs)
+main(WIN, WIDTH, alg)
