@@ -6,7 +6,9 @@ from queue import PriorityQueue
 
 WIDTH = 650 
 WIN = pygame.display.set_mode((WIDTH, WIDTH)) #window
-pygame.display.set_caption("Path Finder (A*)")
+pygame.display.set_caption("Path Finder")
+USER_EVENT = pygame.USEREVENT + 1
+
 
 #Colors and Keys
 RED = (255, 0, 0) 
@@ -230,10 +232,12 @@ def main(win, width):
     GRID = make_grid(ROWS, width)
 
     start, end = None, None
-   
+    alg = ''
 
     clock = pygame.time.Clock()
     run = True
+
+    pygame.event.post(pygame.event.Event(USER_EVENT))
     while run:
         clock.tick(60)
         draw(win, GRID, ROWS, width)
@@ -242,6 +246,9 @@ def main(win, width):
             if event.type == pygame.QUIT:
                 run = False
 
+            if event.type == USER_EVENT:
+                alg = input('What alg would you like to run?(a*, bfs)')
+                
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
                     ROWS -= 1
@@ -254,10 +261,10 @@ def main(win, width):
                     start = None
                     end = None
                     GRID = make_grid(ROWS, width)
+                    pygame.event.post(pygame.event.Event(USER_EVENT))
 
             if pygame.mouse.get_pressed()[0]: #left click
                 pos = pygame.mouse.get_pos()
-                print(pos)
                 row, col = get_mouse_pos(pos, ROWS, width)
                 node = GRID[row][col]
                 
@@ -290,14 +297,19 @@ def main(win, width):
                     for row in GRID:
                         for node in row:
                             node.update_neighbors(GRID) 
-                    #calling A* alg
-                    alg_aStar(lambda: draw(win, GRID, ROWS, width), GRID, start, end)#sending draw func as an argument
-                    #alg_BFS(lambda: draw(win, GRID, ROWS, width), GRID, start, end)
+                    #A* alg
+                    if alg == 'a*':
+                        alg_aStar(lambda: draw(win, GRID, ROWS, width), GRID, start, end)#sending draw func as an argument
+                    #bfs alg
+                    elif alg == 'bfs':
+                        alg_BFS(lambda: draw(win, GRID, ROWS, width), GRID, start, end)
 
                 if event.key == pygame.K_r:
                     start = None
                     end = None
                     GRID = make_grid(ROWS, width)
+                    pygame.event.post(pygame.event.Event(USER_EVENT))
+
     pygame.quit()
 
 
