@@ -100,7 +100,11 @@ def alg_BFS(draw, grid, start, end):
                 q.appendleft(neighbor)
                 visited[neighbor] = True
                 prev[neighbor] = node
-                neighbor.color = GREEN
+
+                if neighbor == end:
+                    neighbor.color = PURPLE
+                else:
+                    neighbor.color = GREEN
 
         draw()
 
