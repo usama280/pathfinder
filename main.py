@@ -4,6 +4,12 @@ from queue import deque
 from queue import PriorityQueue
 
 
+'''
+CHOOSE ALG BELOW 
+'''
+ALG = 'a*' #change alg here (a*, bfs, dfs)
+
+
 WIDTH = 650 
 WIN = pygame.display.set_mode((WIDTH, WIDTH)) #window
 pygame.display.set_caption("Path Finder")
@@ -67,6 +73,53 @@ class Node:
         return False
 
 
+def create_DFS_path(start, end, prev, draw):
+    path = []
+    current = end
+    
+    while current != None:
+        current.color = YELLOW
+        path.append(current)
+        current = prev[current]
+        draw()
+
+    path.reverse()
+    if path[0] != start:
+        return False
+
+
+def alg_DFS(draw, grid, start, end):
+    stack = []
+    stack.append(start)
+
+    visited = {node: False for row in grid for node in row}
+    visited[start] = True
+    prev = {node: None for row in grid for node in row}
+
+    while len(stack) != 0:
+        node = stack.pop()
+        neighbors = node.neighbors
+
+        for neighbor in neighbors:
+            if not visited[neighbor]:
+                stack.append(neighbor)
+                visited[neighbor] = True
+                prev[neighbor] = node
+
+                if neighbor == end:
+                    neighbor.color = PURPLE
+                    create_DFS_path(start, end, prev, draw)
+                    start.color = ORANGE
+                    neighbor.color = PURPLE
+                    return True
+                else:
+                    neighbor.color = GREEN
+
+        draw()
+
+    return False
+
+
 def create_BFS_path(start, end, prev, draw):
     path = []
     current = end
@@ -110,10 +163,6 @@ def alg_BFS(draw, grid, start, end):
     create_BFS_path(start, end, prev, draw)
     start.color = ORANGE
     end.color = PURPLE
-
-    #create_BFS_path(start, end, prev, draw)
-    #start.color = ORANGE
-    #end.color = PURPLE
 
 
 #heuristic function - distance between current and end node
@@ -231,7 +280,7 @@ def get_mouse_pos(pos, rows, width):
 
 
 def main(win, width, alg):
-    ROWS = 50
+    ROWS = 30
     GRID = make_grid(ROWS, width)
 
     start, end = None, None
@@ -305,6 +354,9 @@ def main(win, width, alg):
                     elif alg == 'bfs':
                         alg_BFS(lambda: draw(win, GRID, ROWS, width), GRID, start, end)
 
+                    elif alg == 'dfs':
+                        alg_DFS(lambda: draw(win, GRID, ROWS, width), GRID, start, end)
+
                 if event.key == pygame.K_r:
                     start = None
                     end = None
@@ -318,8 +370,8 @@ print('How to use:\n\t Left-mouse click will place the start node first, followe
 print('\t Right-mouse click will remove start/end/barriers - Note: A start and end node must be present to start algorithm')
 print('\t Scrolling with the mouse increases/decreases the rows and create new grid (Thereby, increasing the zoom)')
 print('\t Hitting space will start the algorithm')
-print('\t Hitting r will create a new grid and allow you to change alg')
-print('\n To change algorithms, change variable ''alg'' to one of the following: a*, bfs')
+print('\t Hitting r will create a new grid')
+print('\n To change algorithms, change variable "ALG" to one of the following: a*, bfs, dfs')
 
-alg = 'a*' #change alg here (a*,bfs)
-main(WIN, WIDTH, alg)
+
+main(WIN, WIDTH, ALG)
