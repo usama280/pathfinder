@@ -3,7 +3,7 @@
 ## How to use:
   
   
-###**Left-mouse click** will place the start node first, followed by the end, and finally the barriers  
+### **Left-mouse click** will place the start node first, followed by the end, and finally the barriers  
 >Right-mouse click will remove start/end/barriers - Note: A start and end node must be present to start algorithm  
 >Scrolling with the mouse increases/decreases the rows and create new grid (Thereby, increasing the zoom)  
 >Hitting space will start the algorithm  
