@@ -13,4 +13,4 @@
 
 
 
-To change algorithms, change variable **ALG** to one of the following: **a*, bfs, dfs**  
+**To change algorithms, change variable ALG to one of the following: a*, bfs, dfs 
